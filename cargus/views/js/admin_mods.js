@@ -1,6 +1,13 @@
 $(document).ready(function(){
-    // adauga buton submit in head-ul orders
-    $('.dropdown-menu, .dropdown-menu-right').prepend('<button type="button" id="add_cargus_bulk" class="dropdown-item js-common_refresh_list-grid-action add_cargus_bulk"><i class="material-icons">library_add</i>Adauga in lista de livrari Cargus</button>');
+    // Check prestashop version
+    // For < 1.7.8 add the button as it is
+    if (_PS_VERSION_.includes('1.7.8') ) {
+        $('.card-header, .js-grid-header').append('<button type="button" id="add_cargus_bulk" class="js-common_refresh_list-grid-action add_cargus_bulk text-right btn btn-action float-right pt-0"><i class="material-icons">library_add</i>Adauga in lista de livrari Cargus</button>');
+    } else {
+        // adauga buton submit in head-ul orders
+        $('.dropdown-menu, .dropdown-menu-right').prepend('<button type="button" id="add_cargus_bulk" class="dropdown-item js-common_refresh_list-grid-action add_cargus_bulk"><i class="material-icons">library_add</i>Adauga in lista de livrari Cargus</button>');
+    }
+
     $('.panel-heading-action').prepend('<div align="right" style="padding-right:3px; float:right;"><input style="height:27px;" type="button" class="button add_cargus_bulk" value="Adauga in lista de livrari Cargus" id="add_cargus_bulk2"></div>');
 
     // ruleaza ajax in loop pt adaugarea comenzilor selectate in lista de livrare
