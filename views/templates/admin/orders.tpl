@@ -47,6 +47,7 @@
                         <th><span class="title_box active">Ramburs numerar</span></th>
                         <th><span class="title_box active">Ramburs cont colector</span></th>
                         <th><span class="title_box active">Platitor expeditie</span></th>
+                        <th><span class="title_box active">Locatie Ship & GO</span></th>
                         <th></th>
                     </tr>
                     </thead>
@@ -71,6 +72,8 @@
                             <td class='{cycle name=color values="odd,even"}'>{$line.cash_repayment} lei</td>
                             <td class='{cycle name=color values="odd,even"}'>{$line.bank_repayment} lei</td>
                             <td class='{cycle name=color values="odd,even"}'>{($line.payer == 2) ? 'Destinatar' : 'Expeditor'}</td>
+                            <td class='{cycle name=color values="odd,even"}'>{$line.pudo_location_id}</td>
+
                             <td>
                                 <div class="btn-group-action">
                                     <div class="btn-group pull-right">

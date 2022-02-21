@@ -44,6 +44,7 @@ class CargusOrderHistoryController extends ModuleAdminController
                 $this->context->smarty->assign('orderId', Tools::getValue('orderId'));
                 $this->context->smarty->assign('awbs', $awbs);
                 $this->context->smarty->assign('token', Tools::getAdminTokenLite('CargusAwbHistory'));
+                $this->context->smarty->assign('tokenTrace', Tools::getAdminTokenLite('CargusAwbTrace'));
 
                 $this->setTemplate('order_history.tpl');
             }

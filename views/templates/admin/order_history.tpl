@@ -43,6 +43,7 @@
                         <th><span class="title_box active">Ramburs cont colector</span></th>
                         <th><span class="title_box active">Platitor expeditie</span></th>
                         <th><span class="title_box active">Status</span></th>
+                        <th><span class="title_box active">Tracking</span></th>
                         <th></th>
                     </tr>
                     </thead>
@@ -60,11 +61,18 @@
                             <td class='{cycle name=color values="odd,even"}'>{$awb.CashRepayment} lei</td>
                             <td class='{cycle name=color values="odd,even"}'>{$awb.BankRepayment} lei</td>
                             <td class='{cycle name=color values="odd,even"}'>{($awb.ShipmentPayer == 2) ? 'Destinatar' : 'Expeditor'}</td>
-
                             <td>
                                {($awb.Status == 'Deleted') ? ('<span class="label color_field" style="background-color:#DC143C; color:white;">'|cat:$awb.Status|cat:'</span>') : $awb.Status}
                             </td>
-
+                            <td>
+                                <div class="btn-group-action">
+                                    <div class="btn-group pull-right">
+                                        <a href="index.php?controller=CargusAwbTrace&token={$tokenTrace}&BarCode={$awb.BarCode}" title="Vizualizare" class="edit btn btn-default">
+                                            <i class="icon-search-plus"></i> Track
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
                             <td>
                                 <div class="btn-group-action">
                                     <div class="btn-group pull-right">

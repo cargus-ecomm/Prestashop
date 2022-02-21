@@ -128,6 +128,16 @@
                     {html_options name=CARGUS_SERVICIU options=$yesNo selected=$yesNoServiciu}
                 </div>
             </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    <span title="" data-toggle="tooltip" class="label-tooltip"
+                          data-original-title="Id tarif"
+                          data-html="true">Id tarif</span>
+                </label>
+                <div class="col-lg-10">
+                    <input type="text" name="CARGUS_ID_TARIF" value="{$id_tarif}"/>
+                </div>
+            </div>
             <div class="panel-footer">
                 <button type="submit" name="submit" value="submit" class="btn btn-default pull-right">
                     <i class="process-icon-save"></i> Salveaza

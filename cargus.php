@@ -6,8 +6,10 @@ if (!defined('_PS_VERSION_')) {
 
 use PrestaShopBundle\Entity\Repository\TabRepository;
 
-class Cargus extends Module
+class Cargus extends PaymentModule
 {
+    protected $mapNotDisplayed;
+
     function __construct()
     {
         $this->name = 'cargus';
@@ -84,9 +86,17 @@ class Cargus extends Module
             `observations` varchar(256) NOT NULL,
             `contents` varchar(256) NOT NULL,
             `barcode` varchar(50) NOT NULL,
+            `pudo_location_id` int(11) NOT NULL,
             `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+            '
+        );
+
+        Db::getInstance()->execute(
+            '
+            ALTER TABLE ps_cart ADD COLUMN pudo_location_id INT;
+            ALTER TABLE ps_orders ADD COLUMN pudo_location_id INT;
             '
         );
 
@@ -95,12 +105,16 @@ class Cargus extends Module
             !$this->registerHook('rightColumn') ||
             !$this->registerHook('leftColumn') ||
             !$this->registerHook('backOfficeHeader') ||
+            !$this->registerHook('paymentOptions') ||
+            !$this->registerHook('paymentReturn') ||
+            !$this->registerHook('displayCarrierExtraContent') ||
             !$this->installTabs()
         ) {
             return false;
         }
 
-       $this->addCarrier();
+        $this->addWebExpressCarrier();
+        $this->addCarrier();
 
         return true;
     }
@@ -194,6 +208,17 @@ class Cargus extends Module
         $tab->active = false;
         $tab->add();
 
+        $tab = new Tab();
+        foreach (Language::getLanguages() as $language) {
+            $tab->name[$language['id_lang']] = $this->l('Trace awb');
+        }
+
+        $tab->class_name = 'CargusAwbTrace';
+        $tab->module = $this->name;
+        $tab->id_parent = $mainTab->id;
+        $tab->active = false;
+        $tab->add();
+
         return true;
     }
 
@@ -236,7 +261,7 @@ class Cargus extends Module
             $groups = Group::getGroups(true);
             foreach ($groups as $group) {
                 Db::getInstance()->insert(
-                    _DB_PREFIX_ . 'carrier_group',
+                    'carrier_group',
                     array(
                         'id_carrier' => (int)($carrier->id),
                         'id_group' => (int)($group['id_group'])
@@ -260,14 +285,14 @@ class Cargus extends Module
 
             foreach ($zones as $zone) {
                 Db::getInstance()->insert(
-                    _DB_PREFIX_ . 'carrier_zone',
+                    'carrier_zone',
                     array(
                         'id_carrier' => (int)($carrier->id),
                         'id_zone' => (int)($zone['id_zone'])
                     )
                 );
                 Db::getInstance()->insert(
-                    _DB_PREFIX_ . 'delivery',
+                    'delivery',
                     array(
                         'id_carrier' => (int)($carrier->id),
                         'id_range_price' => (int)($rangePrice->id),
@@ -277,7 +302,7 @@ class Cargus extends Module
                     )
                 );
                 Db::getInstance()->insert(
-                    _DB_PREFIX_ . 'delivery',
+                    'delivery',
                     array(
                         'id_carrier' => (int)($carrier->id),
                         'id_range_price' => null,
@@ -300,16 +325,129 @@ class Cargus extends Module
         return false;
     }
 
+    public function addWebExpressCarrier()
+    {
+        $carrier = new Carrier();
+        $carrier->name = 'Cargus Ship & GO';
+        $carrier->id_tax_rules_group = 0;
+        $carrier->id_zone = 1;
+        $carrier->active = true;
+        $carrier->deleted = 0;
+        $carrier->shipping_handling = false;
+        $carrier->range_behavior = 0;
+        $carrier->is_module = true;
+        $carrier->shipping_external = true;
+        $carrier->external_module_name = 'cargus';
+        $carrier->need_range = true;
+
+        $languages = Language::getLanguages(true);
+        foreach ($languages as $language) {
+            if ($language['iso_code'] == 'fr') {
+                $carrier->delay[(int)$language['id_lang']] = '24 heures';
+            }
+            if ($language['iso_code'] == 'ro') {
+                $carrier->delay[(int)$language['id_lang']] = '24 ore';
+            }
+            if ($language['iso_code'] == 'en') {
+                $carrier->delay[(int)$language['id_lang']] = '24 hours';
+            }
+            if ($language['iso_code'] == Language::getIsoById(Configuration::get('PS_LANG_DEFAULT'))) {
+                $carrier->delay[(int)$language['id_lang']] = '24 hours';
+            }
+        }
+
+        if ($carrier->add()) {
+
+            // Save Carrier ID
+            Configuration::updateValue('CARGUS_SHIP_GO_CARRIER_ID', (int)$carrier->id);
+
+            $groups = Group::getGroups(true);
+            foreach ($groups as $group) {
+                Db::getInstance()->insert(
+                    'carrier_group',
+                    array(
+                        'id_carrier' => (int)($carrier->id),
+                        'id_group' => (int)($group['id_group'])
+                    )
+                );
+            }
+
+            // TODO Do we need any price ranges for this?
+            $rangePrice = new RangePrice();
+            $rangePrice->id_carrier = $carrier->id;
+            $rangePrice->delimiter1 = '0';
+            $rangePrice->delimiter2 = '10000';
+            $rangePrice->add();
+
+            $rangeWeight = new RangeWeight();
+            $rangeWeight->id_carrier = $carrier->id;
+            $rangeWeight->delimiter1 = '0';
+            $rangeWeight->delimiter2 = '10000';
+            $rangeWeight->add();
+
+            $zones = Zone::getZones(true);
+
+            foreach ($zones as $zone) {
+                Db::getInstance()->insert(
+                    'carrier_zone',
+                    array(
+                        'id_carrier' => (int)($carrier->id),
+                        'id_zone' => (int)($zone['id_zone'])
+                    )
+                );
+
+                Db::getInstance()->insert(
+                    'delivery',
+                    array(
+                        'id_carrier' => (int)($carrier->id),
+                        'id_range_price' => (int)($rangePrice->id),
+                        'id_range_weight' => null,
+                        'id_zone' => (int)($zone['id_zone']),
+                        'price' => '0'
+                    )
+                );
+                Db::getInstance()->insert( 'delivery',
+                    array(
+                        'id_carrier' => (int)($carrier->id),
+                        'id_range_price' => null,
+                        'id_range_weight' => (int)($rangeWeight->id),
+                        'id_zone' => (int)($zone['id_zone']),
+                        'price' => '0'
+                    )
+                );
+            }
+
+            // Copy Logo
+            if (!copy(dirname(__FILE__) . '/ship_and_go.jpg', _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg')) {
+                return false;
+            }
+
+            // Return ID Carrier
+            return (int)($carrier->id);
+        }
+
+        return false;
+    }
+
     public function uninstall()
     {
         Db::getInstance()->execute("DELETE FROM " . _DB_PREFIX_ . "configuration WHERE `name` LIKE '%CARGUS%'");
         Db::getInstance()->execute("DROP TABLE IF EXISTS awb_urgent_cargus");
+        Db::getInstance()->execute(
+            '
+            ALTER TABLE ps_cart DROP COLUMN pudo_location_id;
+            ALTER TABLE ps_orders DROP COLUMN pudo_location_id;
+            '
+        );
 
         if (!parent::uninstall() ||
             !$this->unregisterHook('header') ||
             !$this->unregisterHook('rightColumn') ||
             !$this->unregisterHook('leftColumn') ||
             !$this->unregisterHook('backOfficeHeader') ||
+            !$this->unregisterHook('paymentOptions') ||
+            !$this->unregisterHook('paymentReturn') ||
+            !$this->unregisterHook('displayCarrierExtraContent') ||
             !$this->uninstallTabs()
 
         ) {
@@ -324,6 +462,9 @@ class Cargus extends Module
     public function removeCarrier()
     {
         $carrier = new Carrier(Configuration::get('CARGUS_CARRIER_ID', $id_lang = null));
+        $carrier->delete();
+
+        $carrier = new Carrier(Configuration::get('CARGUS_SHIP_GO_CARRIER_ID', $id_lang = null));
         $carrier->delete();
     }
 
@@ -352,6 +493,9 @@ class Cargus extends Module
         $tab = new Tab($id_tab);
         $tab->delete();
         $id_tab = (int) Tab::getIdFromClassName('CARGUS');
+        $tab = new Tab($id_tab);
+        $tab->delete();
+        $id_tab = (int) Tab::getIdFromClassName('CargusAwbTrace');
         $tab = new Tab($id_tab);
         $tab->delete();
 
@@ -499,6 +643,10 @@ class Cargus extends Module
 
     function hookHeader($params)
     {
+        if ($params['cart']->id_carrier == Configuration::get('CARGUS_SHIP_GO_CARRIER_ID') ) {
+            $this->context->smarty->assign('CARGUS_SHIP_GO_CARRIER_ID', Configuration::get('CARGUS_SHIP_GO_CARRIER_ID'));
+        }
+
         return $this->display(__FILE__, 'views/templates/hook/frontend_header.tpl');
     }
 
@@ -522,9 +670,72 @@ class Cargus extends Module
         }
     }
 
+    /**
+     * @param $params
+     * @return void
+     */
+    public function hookPaymentOptions($params)
+    {   
+        if (!$this->active) {
+            return;
+        }
+
+        if ($params['cart']->id_carrier != Configuration::get('CARGUS_SHIP_GO_CARRIER_ID') ) {
+            return;
+        }
+
+        if (!$this->checkCurrency($params['cart'])) {
+            return;
+        }
+
+        $payment_options = [
+            $this->getOfflinePaymentOption(),
+        ];
+
+        return $payment_options;
+    }
+
+    public function checkCurrency($cart)
+    {
+        $currency_order = new Currency($cart->id_currency);
+        $currencies_module = $this->getCurrency($cart->id_currency);
+
+        if (is_array($currencies_module)) {
+            foreach ($currencies_module as $currency_module) {
+                if ($currency_order->id == $currency_module['id_currency']) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function getOfflinePaymentOption()
+    {
+        $offlineOption = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+        $offlineOption->setCallToActionText("Plata ramburs la  Ship & Go")
+            ->setAction($this->context->link->getModuleLink($this->name, 'validation', array(), true))
+            ->setAdditionalInformation($this->context->smarty->fetch('module:cargus/views/templates/front/payment_infos.tpl'))
+            ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/assets/img/logosg-30x30.jpg'));
+
+        return $offlineOption;
+    }
+
+    /**
+     * @return string
+     */
+    public function hookDisplayCarrierExtraContent($carrier) {
+        if ($carrier['carrier']['id_reference'] == Configuration::get('CARGUS_SHIP_GO_CARRIER_ID')) {
+            $this->context->smarty->assign('CARGUS_SHIP_GO_CARRIER_ID', Configuration::get('CARGUS_SHIP_GO_CARRIER_ID'));
+            $this->context->smarty->assign('UPDATE_SHIP_GO_LOCATION_LINK', $this->context->link->getModuleLink($this->name, 'location', array(), true));
+
+            return $this->display(__FILE__, 'views/templates/hook/ship_and_go_map.tpl');
+        }
+    }
+
     public function getOrderShippingCost($params, $shipping_cost)
     {
-        return $this->calculeazaTransport($params);
+       return $this->calculeazaTransport($params);
     }
 
     public function getOrderShippingCostExternal($params)
@@ -707,7 +918,7 @@ class Cargus extends Module
                 print_r($fields);
                 die();
             }
-        } catch (Exception $ex) {
+        } catch (Exception $ex) {var_dump($ex->getMessage());die;
             print_r($ex);
             die();
         }

@@ -34,6 +34,7 @@ class CargusPreferencesController extends ModuleAdminController
             Configuration::updateValue('CARGUS_TRANSPORT_GRATUIT', Tools::getValue('CARGUS_TRANSPORT_GRATUIT'));
             Configuration::updateValue('CARGUS_COST_FIX', Tools::getValue('CARGUS_COST_FIX'));
             Configuration::updateValue('CARGUS_SERVICIU', Tools::getValue('CARGUS_SERVICIU'));
+            Configuration::updateValue('CARGUS_ID_TARIF', Tools::getValue('CARGUS_ID_TARIF'));
 
             $_SESSION['post_status'] = array(
                 'confirmations' => array('Preferintele au fost salvate cu succes!'),
@@ -90,6 +91,7 @@ class CargusPreferencesController extends ModuleAdminController
             $this->context->smarty->assign('transport', Configuration::get('CARGUS_TRANSPORT_GRATUIT', $id_lang = NULL));
             $this->context->smarty->assign('cost', Configuration::get('CARGUS_COST_FIX', $id_lang = NULL));
             $this->context->smarty->assign('yesNoServiciu', Configuration::get('CARGUS_SERVICIU', $id_lang = NULL));
+            $this->context->smarty->assign('id_tarif', Configuration::get('CARGUS_ID_TARIF', $id_lang = NULL));
 
             $this->setTemplate('preferences.tpl');
         }

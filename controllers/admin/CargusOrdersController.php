@@ -80,59 +80,107 @@ class CargusOrdersController extends ModuleAdminController
                 }
 
                 if($go) {
-                    $fields = [
-                        'Sender' => [
-                            'LocationId' => $row[0]['pickup_id']
-                        ],
-                        'Recipient' => [
-                            'LocationId' => null,
-                            'Name' => $row[0]['name'],
-                            'CountyId' => null,
-                            'CountyName' => $row[0]['county_name'],
-                            'LocalityId' => null,
-                            'LocalityName' => $row[0]['locality_name'],
-                            'StreetId' => null,
-                            'StreetName' => '-',
-                            'AddressText' => $row[0]['address'],
-                            'ContactPerson' => $row[0]['contact'],
-                            'PhoneNumber' => $row[0]['phone'],
-                            'Email' => $row[0]['email'],
-                            'CodPostal' => $row[0]['postal_code'],
-                        ],
-                        'Parcels' => $row[0]['parcels'],
-                        'Envelopes' => $row[0]['envelopes'],
-                        'TotalWeight' => $row[0]['weight'],
-                        'DeclaredValue' => $row[0]['value'],
-                        'CashRepayment' => $row[0]['cash_repayment'],
-                        'BankRepayment' => $row[0]['bank_repayment'],
-                        'OtherRepayment' => $row[0]['other_repayment'],
-                        'OpenPackage' => $row[0]['openpackage'] == 1 ? true : false,
-                        'ShipmentPayer' => $row[0]['payer'],
-                        'MorningDelivery' => $row[0]['morning_delivery'] == 1 ? true : false,
-                        'SaturdayDelivery' => $row[0]['saturday_delivery'] == 1 ? true : false,
-                        'Observations' => $row[0]['observations'],
-                        'PackageContent' => $row[0]['contents'],
-                        'CustomString' => $row[0]['order_id'],
-                        'ParcelCodes' => [
-                            [
-                                'Code'=> 0,
-                                'Type'=>   $row[0]['parcels'] > 0 ? 1 : 0,
-                                'Weight' => $row[0]['weight'],
-                                'Length' => $row[0]['length'],
-                                'Width' => $row[0]['width'],
-                                'Height' => $row[0]['height'],
-                                'ParcelContent' => $row[0]['contents']
+                    if ($row[0]['pudo_location_id']) {
+                        $fields = [
+                            'DeliveryPudoPoint' => $row[0]['pudo_location_id'],
+                            'Sender' => [
+                                'LocationId' => $row[0]['pickup_id']
+                            ],
+                            'Recipient' => [
+                                'Name' => $row[0]['name'],
+                                'ContactPerson' => $row[0]['contact'],
+                                'PhoneNumber' => $row[0]['phone'],
+                                'Email' => $row[0]['email'],
+                            ],
+                            'Parcels' => $row[0]['parcels'],
+                            'Envelopes' => $row[0]['envelopes'],
+                            'TotalWeight' => $row[0]['weight'],
+                            'DeclaredValue' => $row[0]['value'],
+                            'CashRepayment' => $row[0]['cash_repayment'],
+                            'BankRepayment' => $row[0]['bank_repayment'],
+                            'OtherRepayment' => $row[0]['other_repayment'],
+                            'OpenPackage' => $row[0]['openpackage'] == 1 ? true : false,
+                            'ShipmentPayer' => $row[0]['payer'],
+                            'MorningDelivery' => $row[0]['morning_delivery'] == 1 ? true : false,
+                            'SaturdayDelivery' => $row[0]['saturday_delivery'] == 1 ? true : false,
+                            'Observations' => $row[0]['observations'],
+                            'PackageContent' => $row[0]['contents'],
+                            'CustomString' => $row[0]['order_id'],
+                            'ParcelCodes' => [
+                                [
+                                    'Code'=> 0,
+                                    'Type'=>   $row[0]['parcels'] > 0 ? 1 : 0,
+                                    'Weight' => $row[0]['weight'],
+                                    'Length' => $row[0]['length'],
+                                    'Width' => $row[0]['width'],
+                                    'Height' => $row[0]['height'],
+                                    'ParcelContent' => $row[0]['contents']
+                                ]
                             ]
-                        ]
-                    ];
+                        ];
+                    } else {
+                        $fields = [
+                            'Sender' => [
+                                'LocationId' => $row[0]['pickup_id']
+                            ],
+                            'Recipient' => [
+                                'LocationId' => null,
+                                'Name' => $row[0]['name'],
+                                'CountyId' => null,
+                                'CountyName' => $row[0]['county_name'],
+                                'LocalityId' => null,
+                                'LocalityName' => $row[0]['locality_name'],
+                                'StreetId' => null,
+                                'StreetName' => '-',
+                                'AddressText' => $row[0]['address'],
+                                'ContactPerson' => $row[0]['contact'],
+                                'PhoneNumber' => $row[0]['phone'],
+                                'Email' => $row[0]['email'],
+                                'CodPostal' => $row[0]['postal_code'],
+                            ],
+                            'Parcels' => $row[0]['parcels'],
+                            'Envelopes' => $row[0]['envelopes'],
+                            'TotalWeight' => $row[0]['weight'],
+                            'DeclaredValue' => $row[0]['value'],
+                            'CashRepayment' => $row[0]['cash_repayment'],
+                            'BankRepayment' => $row[0]['bank_repayment'],
+                            'OtherRepayment' => $row[0]['other_repayment'],
+                            'OpenPackage' => $row[0]['openpackage'] == 1 ? true : false,
+                            'ShipmentPayer' => $row[0]['payer'],
+                            'MorningDelivery' => $row[0]['morning_delivery'] == 1 ? true : false,
+                            'SaturdayDelivery' => $row[0]['saturday_delivery'] == 1 ? true : false,
+                            'Observations' => $row[0]['observations'],
+                            'PackageContent' => $row[0]['contents'],
+                            'CustomString' => $row[0]['order_id'],
+                            'ParcelCodes' => [
+                                [
+                                    'Code'=> 0,
+                                    'Type'=>   $row[0]['parcels'] > 0 ? 1 : 0,
+                                    'Weight' => $row[0]['weight'],
+                                    'Length' => $row[0]['length'],
+                                    'Width' => $row[0]['width'],
+                                    'Height' => $row[0]['height'],
+                                    'ParcelContent' => $row[0]['contents']
+                                ]
+                            ]
+                        ];
+                    }
 
-                    if(Configuration::get('CARGUS_SERVICIU', $id_lang = null) == 1) {
-                        if($row[0]['weight'] <= 31){
-                            $fields['ServiceId'] = 34;
-                        } elseif ($row[0]['weight'] <= 50){
-                            $fields['ServiceId'] = 35;
-                        } else {
-                            $fields['ServiceId'] = 36;
+                    if (!empty(Configuration::get('CARGUS_ID_TARIF', $id_lang = NULL))) {
+                        $fields['PriceTableId'] = Configuration::get('CARGUS_ID_TARIF', $id_lang = NULL);
+                    }
+
+                    if ($row[0]['pudo_location_id']) {
+                        $fields['ServiceId'] = 38;
+                    } else {
+                        if(Configuration::get('CARGUS_SERVICIU', $id_lang = null) == 1) {
+                            if ($row[0]['weight'] <= 31) {
+                                $fields['ServiceId'] = 34;
+                            } elseif ($row[0]['weight'] <= 50) {
+                                $fields['ServiceId'] = 35;
+                            } else {
+                                $fields['ServiceId'] = 36;
+                            }
                         }
                     }
 

@@ -11,8 +11,8 @@ class CargusClass {
 
         $this->curl = curl_init();
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($this->curl, CURLOPT_TIMEOUT, 10);
+        curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 300);
+        curl_setopt($this->curl, CURLOPT_TIMEOUT, 300);
         curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, false);
     }
 
@@ -38,8 +38,9 @@ class CargusClass {
                 'Content-Type: application/json',
                 'Content-Length: '.strlen($json)
             );
+
             if ($function == 'Awbs' && $verb == 'POST') {
-                $headers['path'] = 'PS'.substr(str_replace('.', '', _PS_VERSION_), 0, 3);
+                $headers[] = 'Path: '. 'PS'.substr(str_replace('.', '', _PS_VERSION_), 0, 3);
             }
         }
 

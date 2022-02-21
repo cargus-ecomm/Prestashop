@@ -420,13 +420,15 @@ class CargusAdminController extends ModuleAdminController
 
                 // obtin indicativul judetului destinatarului
                 $states = State::getStatesByIdCountry($address->id_country);
+
                 $state_ISO = NULL;
                 foreach ($states as $s) {
                     if ($s['id_state'] == $address->id_state) {
                         $state_ISO = $s['iso_code'];
                     }
                 }
-                if (is_null($state_ISO)) {
+
+                if (is_null($state_ISO)) {var_dump($state_ISO);
                     die('Nu am putut obtine indicativul judetului destinatarului'. var_export($address, true));
                 }
 
@@ -436,6 +438,12 @@ class CargusAdminController extends ModuleAdminController
                 foreach ($products as $p) {
                     $contents[] = $p['product_quantity'].' buc. '.$p['product_name'];
                 }
+
+                $pudoLocationId = Db::getInstance()->getValue('
+                    SELECT pudo_location_id FROM `' . _DB_PREFIX_ . 'orders`
+                    WHERE `id_order` = ' . $id
+                );
+
 
                 // adaug awb-ul in baza de date
                 $sql = "INSERT INTO awb_urgent_cargus SET
@@ -467,7 +475,8 @@ class CargusAdminController extends ModuleAdminController
                                 openpackage = '".addslashes($openpackage)."',
                                 observations = '',
                                 contents = '".addslashes(htmlentities(trim(implode('; ', $contents), '; ')))."',
-                                barcode = '0'
+                                barcode = '0',
+                                pudo_location_id = '".$pudoLocationId."'
                             ";
 
                 $result = Db::getInstance()->execute($sql);
