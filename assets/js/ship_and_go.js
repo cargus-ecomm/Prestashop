@@ -989,7 +989,7 @@ var widget;
         lang: 'EN',
         widgetSize: 'small',
         //IMPORTANT ADD /prestashop
-        apiUrl: 'http://' + window.location.host +'/modules/cargus/',
+        apiUrl: 'https://' + window.location.host +'/modules/cargus/',
         style: {
             font: 'Arial, Helvetica, sans-serif',
             backgroundColor: 'white',
