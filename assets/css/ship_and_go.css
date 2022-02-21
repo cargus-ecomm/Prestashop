@@ -1033,3 +1033,8 @@ span.disabled{
     color: #666666;
     cursor: not-allowed !important;
 }
+
+.custom-checkbox input[type=checkbox]+span:not(.color), .custom-radio {
+    background: white !important;
+    border-color: black !important;
+}
