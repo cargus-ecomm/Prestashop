@@ -386,6 +386,7 @@ class CargusAdminController extends ModuleAdminController
                     || stristr($order->payment, 'cash')
                     || stristr($order->payment, 'numerar')
                     || stristr($order->payment, 'livrare')
+                    || stristr($order->payment, 'cargus')
                 ) {
                     if (Configuration::get('CARGUS_PLATITOR', $id_lang = NULL) != 'expeditor') {
                         $payer = 2;

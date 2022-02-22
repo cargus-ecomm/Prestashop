@@ -64,9 +64,10 @@ class CargusEditAwbController extends ModuleAdminController
                 );
             }
 
-            ob_end_clean();
-            header('Location: '.$_SERVER['REQUEST_URI']);
-            die();
+            Tools::redirectAdmin(
+                $this->context->link->getAdminLink('CargusOrders', true) .
+                '&module_name=[cargus]&configure=[cargus]'
+            );
         }
 
         if (isset($_SESSION['post_status'])) {

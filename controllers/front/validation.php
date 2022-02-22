@@ -57,14 +57,14 @@ class CargusValidationModuleFrontController extends ModuleFrontController
         ]);
 
          $customer = new Customer($cart->id_customer);
+         
          if (!Validate::isLoadedObject($customer))
              Tools::redirect('index.php?controller=order&step=1');
-
-         $currency = $this->context->currency;
+         
          $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
          $mailVars = array();
 
-         $this->module->validateOrder($cart->id, Configuration::get('PS_OS_BANKWIRE'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
+        $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, array(), null, false, $customer->secure_key);
 
         $pudoLocationId = Db::getInstance()->getValue('
             SELECT pudo_location_id FROM `' . _DB_PREFIX_ . 'cart`

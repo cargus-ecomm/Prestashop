@@ -976,6 +976,10 @@ var widget;
 
 (function() {
     // Setup map
+    var url = window.location.href;
+
+    var arr = url.split("/");
+
     widget = new Widget({
         key: '',
         initialPosition: { latitude: 44.435701, longitude: 26.101646 },
@@ -989,7 +993,7 @@ var widget;
         lang: 'EN',
         widgetSize: 'small',
         //IMPORTANT ADD /prestashop
-        apiUrl: 'https://' + window.location.host +'/modules/cargus/',
+        apiUrl: arr[0] + "//" + arr[2] +'/modules/cargus/',
         style: {
             font: 'Arial, Helvetica, sans-serif',
             backgroundColor: 'white',
@@ -1104,6 +1108,13 @@ var widget;
             }
         } else {
             $('button.continue').prop('disabled', false);
+        }
+    });
+
+    $(window).keydown(function(event){
+        if(event.keyCode == 13) {
+            event.preventDefault();
+            return false;
         }
     });
 

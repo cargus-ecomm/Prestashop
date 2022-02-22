@@ -69,15 +69,16 @@ class CargusOrdersController extends ModuleAdminController
 
                 $go = true;
 
-                if(!$row[0]['height'] || !$row[0]['length'] || !$row[0]['width']){
+                if ((!Configuration::get('CARGUS_GREUTATE', $id_lang = NULL) || !Configuration::get('CARGUS_LUNGIME', $id_lang = NULL)
+                || !Configuration::get('CARGUS_LATIME', $id_lang = NULL)) && (!$row[0]['height'] || !$row[0]['length'] || !$row[0]['width'])) {
                     $errors[] = 'Va rugam sa introduceti dimensiunile coletelor!';
                     $go = false;
                 }
 
-                if(!$row[0]['postal_code']){
-                    $errors[] = 'Va rugam sa introduceti codul postal al destinatarului!';
-                    $go = false;
-                }
+//                if(!$row[0]['postal_code']){
+//                    $errors[] = 'Va rugam sa introduceti codul postal al destinatarului!';
+//                    $go = false;
+//                }
 
                 if($go) {
                     if ($row[0]['pudo_location_id']) {
@@ -110,9 +111,9 @@ class CargusOrdersController extends ModuleAdminController
                                 [
                                     'Code'=> 0,
                                     'Type'=>   $row[0]['parcels'] > 0 ? 1 : 0,
-                                    'Weight' => $row[0]['weight'],
-                                    'Length' => $row[0]['length'],
-                                    'Width' => $row[0]['width'],
+                                    'Weight' => $row[0]['weight'] > 0 ? $row[0]['weight'] : Configuration::get('CARGUS_GREUTATE', $id_lang = NULL),
+                                    'Length' => $row[0]['length'] > 0 ? $row[0]['length']  : Configuration::get('CARGUS_LUNGIME', $id_lang = NULL),
+                                    'Width' => $row[0]['width'] > 0 ? $row[0]['width'] : Configuration::get('CARGUS_LATIME', $id_lang = NULL),
                                     'Height' => $row[0]['height'],
                                     'ParcelContent' => $row[0]['contents']
                                 ]
@@ -156,9 +157,9 @@ class CargusOrdersController extends ModuleAdminController
                                 [
                                     'Code'=> 0,
                                     'Type'=>   $row[0]['parcels'] > 0 ? 1 : 0,
-                                    'Weight' => $row[0]['weight'],
-                                    'Length' => $row[0]['length'],
-                                    'Width' => $row[0]['width'],
+                                    'Weight' => $row[0]['weight'] > 0 ? $row[0]['weight'] : Configuration::get('CARGUS_GREUTATE', $id_lang = NULL),
+                                    'Length' => $row[0]['length'] > 0 ? $row[0]['length']  : Configuration::get('CARGUS_LUNGIME', $id_lang = NULL),
+                                    'Width' => $row[0]['width'] > 0 ? $row[0]['width'] : Configuration::get('CARGUS_LATIME', $id_lang = NULL),
                                     'Height' => $row[0]['height'],
                                     'ParcelContent' => $row[0]['contents']
                                 ]

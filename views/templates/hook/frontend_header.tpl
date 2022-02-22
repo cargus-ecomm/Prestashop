@@ -13,7 +13,11 @@ var cargus_url = '{$smarty.const.__PS_BASE_URI__}';
             // Add more modules values here
             let codArray = [
                 'cashondelivery',
-                'cod'
+                'cod',
+                'ramburs',
+                'cash',
+                'numerar',
+                'livrare'
             ];
 
             for (const codName of codArray) {
