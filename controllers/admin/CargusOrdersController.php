@@ -114,7 +114,7 @@ class CargusOrdersController extends ModuleAdminController
                                     'Weight' => $row[0]['weight'] > 0 ? $row[0]['weight'] : Configuration::get('CARGUS_GREUTATE', $id_lang = NULL),
                                     'Length' => $row[0]['length'] > 0 ? $row[0]['length']  : Configuration::get('CARGUS_LUNGIME', $id_lang = NULL),
                                     'Width' => $row[0]['width'] > 0 ? $row[0]['width'] : Configuration::get('CARGUS_LATIME', $id_lang = NULL),
-                                    'Height' => $row[0]['height'],
+                                    'Height' => $row[0]['height'] > 0 ? $row[0]['height'] : Configuration::get('CARGUS_INALTIME', $id_lang = NULL),
                                     'ParcelContent' => $row[0]['contents']
                                 ]
                             ]
@@ -160,7 +160,7 @@ class CargusOrdersController extends ModuleAdminController
                                     'Weight' => $row[0]['weight'] > 0 ? $row[0]['weight'] : Configuration::get('CARGUS_GREUTATE', $id_lang = NULL),
                                     'Length' => $row[0]['length'] > 0 ? $row[0]['length']  : Configuration::get('CARGUS_LUNGIME', $id_lang = NULL),
                                     'Width' => $row[0]['width'] > 0 ? $row[0]['width'] : Configuration::get('CARGUS_LATIME', $id_lang = NULL),
-                                    'Height' => $row[0]['height'],
+                                    'Height' => $row[0]['height'] > 0 ? $row[0]['height'] : Configuration::get('CARGUS_INALTIME', $id_lang = NULL),
                                     'ParcelContent' => $row[0]['contents']
                                 ]
                             ]

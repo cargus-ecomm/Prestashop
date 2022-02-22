@@ -168,6 +168,16 @@
                     <input type="text" name="CARGUS_LATIME" value="{$latime}"/>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    <span title="" data-toggle="tooltip" class="label-tooltip"
+                          data-original-title="Inaltime"
+                          data-html="true">Inaltime</span>
+                </label>
+                <div class="col-lg-10">
+                    <input type="text" name="CARGUS_INALTIME" value="{$inaltime}"/>
+                </div>
+            </div>
             <div class="panel-footer">
                 <button type="submit" name="submit" value="submit" class="btn btn-default pull-right">
                     <i class="process-icon-save"></i> Salveaza

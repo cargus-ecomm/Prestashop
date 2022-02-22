@@ -38,6 +38,7 @@ class CargusPreferencesController extends ModuleAdminController
             Configuration::updateValue('CARGUS_GREUTATE', Tools::getValue('CARGUS_GREUTATE'));
             Configuration::updateValue('CARGUS_LUNGIME', Tools::getValue('CARGUS_LUNGIME'));
             Configuration::updateValue('CARGUS_LATIME', Tools::getValue('CARGUS_LATIME'));
+            Configuration::updateValue('CARGUS_INALTIME', Tools::getValue('CARGUS_INALTIME'));
 
             $_SESSION['post_status'] = array(
                 'confirmations' => array('Preferintele au fost salvate cu succes!'),
@@ -98,6 +99,7 @@ class CargusPreferencesController extends ModuleAdminController
             $this->context->smarty->assign('greutate', Configuration::get('CARGUS_GREUTATE', $id_lang = NULL));
             $this->context->smarty->assign('lungime', Configuration::get('CARGUS_LUNGIME', $id_lang = NULL));
             $this->context->smarty->assign('latime', Configuration::get('CARGUS_LATIME', $id_lang = NULL));
+            $this->context->smarty->assign('inaltime', Configuration::get('CARGUS_INALTIME', $id_lang = NULL));
 
             $this->setTemplate('preferences.tpl');
         }
